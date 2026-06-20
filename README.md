@@ -1,0 +1,11 @@
+# Learning
+
+Persönliches Lern-Repository für verschiedene Technologien und Projekte.
+
+## Inhalt
+
+- **text-to-speech/** – Text-to-Speech Experimente und Projekte
+
+## Ziel
+
+Dieses Repository dient als Sammlung von Lernprojekten und Experimenten.
