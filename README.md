@@ -4,7 +4,8 @@ Persönliches Lern-Repository für verschiedene Technologien und Projekte.
 
 ## Inhalt
 
-- **text-to-speech/** – Text-to-Speech Experimente und Projekte
+- **text-to-speech/** – Text-to-Speech Toolkit mit ElevenLabs API (Web-UI, CLI, Audio-Mixer)
+- **operations/** – Umsetzungspläne und Dokumentation
 
 ## Ziel
 

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Toolkit</title>
+    <meta name="description" content="Konvertiere Text in natürlich klingende MP3-Dateien mit ElevenLabs API">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-noise"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </div>
+                    <h1>Text-to-Speech</h1>
+                </div>
+                <p class="subtitle">Natürlich klingende MP3s mit ElevenLabs</p>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tabs" id="tabs">
+            <button class="tab active" data-tab="tts" id="tab-tts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                </svg>
+                Text → Sprache
+            </button>
+            <button class="tab" data-tab="mixer" id="tab-mixer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"/>
+                    <line x1="4" y1="10" x2="4" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12" y2="3"/>
+                    <line x1="20" y1="21" x2="20" y2="16"/>
+                    <line x1="20" y1="12" x2="20" y2="3"/>
+                    <circle cx="4" cy="12" r="2"/>
+                    <circle cx="12" cy="10" r="2"/>
+                    <circle cx="20" cy="14" r="2"/>
+                </svg>
+                Audio Mixer
+            </button>
+        </nav>
+
+        <!-- TTS Section -->
+        <section class="panel" id="panel-tts">
+            <div class="card">
+                <h2>Text eingeben</h2>
+
+                <!-- Input Method Toggle -->
+                <div class="input-toggle" id="input-toggle">
+                    <button class="toggle-btn active" data-input="text" id="btn-input-text">Text einfügen</button>
+                    <button class="toggle-btn" data-input="file" id="btn-input-file">Dateien hochladen</button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="input-area" id="input-text-area">
+                    <textarea
+                        id="text-input"
+                        placeholder="Text hier einfügen oder eine Datei hochladen..."
+                        rows="10"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="char-count">0</span> Zeichen
+                        <span class="char-warning" id="char-warning" style="display:none">
+                            ⚠️ Langer Text – wird in Chunks aufgeteilt
+                        </span>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="input-area hidden" id="input-file-area">
+                    <div class="drop-zone" id="drop-zone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Dateien hierher ziehen</p>
+                        <span>oder klicken zum Auswählen</span>
+                        <span class="formats">.txt, .md, .pdf</span>
+                        <input type="file" id="file-input" multiple accept=".txt,.md,.pdf" />
+                    </div>
+                    <div class="file-list" id="file-list"></div>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="card">
+                <h2>Optionen</h2>
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label for="voice-select">Stimme</label>
+                        <select id="voice-select">
+                            <option value="">Stimmen werden geladen...</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label class="toggle-label">
+                            <span>Präprozessor</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="preprocess-toggle">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                        <p class="option-hint">Entfernt Code, Markdown-Syntax, URLs etc.</p>
+                    </div>
+                </div>
+
+                <!-- Preprocessor Preview -->
+                <div class="preprocess-preview hidden" id="preprocess-preview">
+                    <h3>Vorschau: Bereinigter Text</h3>
+                    <div class="preview-stats" id="preview-stats"></div>
+                    <div class="preview-text" id="preview-text"></div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button class="btn-primary" id="btn-generate" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                <span>MP3 generieren</span>
+            </button>
+
+            <!-- Progress -->
+            <div class="progress-section hidden" id="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Generiere Audio...</p>
+                <div class="waveform" id="waveform">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="result-section hidden" id="result-section">
+                <div class="card result-card">
+                    <div class="result-icon">✅</div>
+                    <h3>MP3 erstellt!</h3>
+                    <p id="result-info"></p>
+                    <audio controls id="audio-player" class="audio-player"></audio>
+                    <button class="btn-download" id="btn-download">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Herunterladen
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mixer Section -->
+        <section class="panel hidden" id="panel-mixer">
+            <div class="card">
+                <h2>Audio Mixer</h2>
+                <p class="card-desc">Überlagere eine Sprach-MP3 mit Hintergrundmusik</p>
+
+                <div class="mixer-grid">
+                    <div class="mixer-upload">
+                        <label>Sprach-MP3</label>
+                        <div class="drop-zone mini" id="speech-drop-zone">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            </svg>
+                            <span id="speech-filename">MP3 auswählen</span>
+                            <input type="file" id="speech-input" accept=".mp3" />
+                        </div>
+                    </div>
+                    <div class="mixer-upload">
+                        <label>Musik-MP3</label>
+                        <div class="drop-zone mini" id="music-drop-zone">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            <span id="music-filename">MP3 auswählen</span>
+                            <input type="file" id="music-input" accept=".mp3" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label for="music-volume">Musik-Lautstärke: <span id="volume-value">-15</span> dB</label>
+                    <input
+                        type="range"
+                        id="music-volume"
+                        min="-30"
+                        max="0"
+                        value="-15"
+                        step="1"
+                        class="slider"
+                    />
+                    <div class="slider-labels">
+                        <span>Leiser</span>
+                        <span>Lauter</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btn-mix" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"/>
+                    <line x1="4" y1="10" x2="4" y2="3"/>
+                    <circle cx="4" cy="12" r="2"/>
+                </svg>
+                <span>Audio mischen</span>
+            </button>
+
+            <!-- Mixer Progress -->
+            <div class="progress-section hidden" id="mixer-progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill indeterminate" id="mixer-progress-fill"></div>
+                </div>
+                <p class="progress-text" id="mixer-progress-text">Mische Audio...</p>
+            </div>
+
+            <!-- Mixer Result -->
+            <div class="result-section hidden" id="mixer-result-section">
+                <div class="card result-card">
+                    <div class="result-icon">🎧</div>
+                    <h3>Mix erstellt!</h3>
+                    <p id="mixer-result-info"></p>
+                    <audio controls id="mixer-audio-player" class="audio-player"></audio>
+                    <button class="btn-download" id="btn-mixer-download">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Herunterladen
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Error Toast -->
+    <div class="toast hidden" id="error-toast">
+        <span class="toast-icon">❌</span>
+        <span class="toast-message" id="toast-message"></span>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
