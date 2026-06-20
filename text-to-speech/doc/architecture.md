@@ -196,7 +196,7 @@ REST-API mit 6 Endpoints, die alle Module orchestriert:
 
 ```mermaid
 graph TD
-    subgraph "Flask Server (Port 5000)"
+    subgraph "Flask Server (Port 5050)"
         R1["GET /<br/>Web-UI anzeigen"]
         R2["POST /api/convert<br/>Text → MP3"]
         R3["POST /api/upload<br/>Dateien → MP3"]

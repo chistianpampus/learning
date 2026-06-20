@@ -39,7 +39,7 @@ source venv/bin/activate
 python app.py
 ```
 
-Dann im Browser öffnen: **http://localhost:5000**
+Dann im Browser öffnen: **http://localhost:5050**
 
 ### Per Shortcut
 

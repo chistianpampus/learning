@@ -43,7 +43,7 @@ cp .env.example .env
 ```bash
 source venv/bin/activate
 python app.py
-# → http://localhost:5000
+# → http://localhost:5050
 ```
 
 ### CLI

@@ -34,9 +34,9 @@ if [ ! -f ".env" ]; then
 fi
 
 # Browser öffnen (nach kurzer Wartezeit)
-(sleep 2 && open "http://localhost:5000") &
+(sleep 2 && open "http://localhost:5050") &
 
-echo "🌐 Öffne http://localhost:5000 ..."
+echo "🌐 Öffne http://localhost:5050 ..."
 echo "   Zum Beenden: Ctrl+C"
 echo ""
 

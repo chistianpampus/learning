@@ -33,7 +33,7 @@ PREPROCESS_DEFAULT = False
 
 # Flask
 FLASK_HOST = "0.0.0.0"
-FLASK_PORT = 5000
+FLASK_PORT = 5050
 FLASK_DEBUG = True
 
 # Erlaubte Dateiendungen für Upload
